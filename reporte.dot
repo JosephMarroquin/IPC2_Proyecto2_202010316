@@ -1,0 +1,23 @@
+digraph L{
+    node[shape=box fillcolor="#FFEDBB" style=filled]
+    
+    subgraph cluster_p{
+        label="Elaboracion"
+        bgcolor="#398D9C"
+        raiz[label="0"]
+        edge[dir="both"]
+        /* Cabeceras de las filas */
+
+        Columna1[label="1",group=1,fillcolor=yellow];
+        Columna2[label="2",group=2,fillcolor=yellow];
+        Columna3[label="3",group=3,fillcolor=yellow];
+
+        Columna1->Columna2
+        Columna2->Columna3
+        Columna3->Columna4
+
+        raiz->Columna1
+
+        {rank=same;raiz;Columna1;Columna2;Columna3;}
+    }
+}

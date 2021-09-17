@@ -4,25 +4,31 @@ from tkinter import *
 import tkinter as tk
 import xml.etree.ElementTree as xml
 import xml.etree.ElementTree as ET
+from lista import *
+from producto import ListaProducto
+import gestor
+from maquina import *
 
 ventana=tkinter.Tk()
 ventana.geometry("900x620")
-
+cont=0
+Label(ventana, text="Listado de productos:").place(x=30,y=0)
+lista_productos=Listbox(ventana,width=50)
 
 def cargarSimulacion():
     ventana.filename=filedialog.askopenfilename(title="Archivo de Simulacion",filetypes=(("xml files", "*.xml"),("all files","*.*")))
     direccion=ventana.filename
     objetoTree=xml.parse(direccion)
     root=objetoTree.getroot()
-
-    n=20
-    nn=0
+    lista_productos.place(x=30,y=20)
+    global cont
 
     for listaproducto in root.findall("ListadoProductos"):
         for producto in listaproducto.findall("Producto"):
-            Label(ventana, text="Listado de productos:").place(x=30,y=0)
-            Label(ventana, text=producto.text).place(x=30,y=n+nn)
-            nn=n
+            lista_productos.insert(cont,producto.text)
+            cont+=1
+
+productosMaquina=ListaNoOrdenada()
 
 def cargarMaquina():
     ventana.filename=filedialog.askopenfilename(title="Configuracion de maquina",filetypes=(("xml files", "*.xml"),("all files","*.*")))
@@ -42,9 +48,18 @@ def cargarMaquina():
     
     for ListadoProductos in root.findall("ListadoProductos"):
         for Producto in ListadoProductos.findall("Producto"):
+
             for nombre in Producto.findall("nombre"):
+                nombreProducto=ListaProducto(nombre.text)
+
                 for elaboracion in Producto.findall("elaboracion"):
                     print("Nombre: "+nombre.text+" Elaboracion: "+elaboracion.text)
+                    string_list=elaboracion.text.split()
+                    string_list=string_list[::-1]
+                    for e in range(0,len(string_list)):
+                        nombreProducto.agregaMatriz(string_list[e])
+
+                productosMaquina.agregar(nombreProducto)
 
 barraMenu=Menu(ventana)
 menuArchivo=Menu(barraMenu)
@@ -54,12 +69,21 @@ barraMenu.add_cascade(label="Cargar Archivo",menu=menuArchivo)
 ventana.config(menu=barraMenu)
 
 def campoTexto():
-    resultado=campo_texto.get("1.0","end")
-    print(resultado)
+    resultado=campo_texto.get()
+    gestor.mostrarLista(productosMaquina)
+    elaboracion = gestor.buscarNodo(productosMaquina,resultado)
+    maq = Maquina(elaboracion)
+    maq.elaboracionMaquina()
+    maq.generarGraphviz()
+    img=tkinter.PhotoImage(file="graphviz.png")
+    lbl_img=tkinter.Label(ventana,image=img).place(x=30,y=350)
+    lbl_img.pack()
+
+
 
 Label(ventana, text="Ingrese el nombre del producto a procesar").place(x=30,y=200)
-campo_texto=tk.Text(ventana,width=15,height=1)
-campo_texto.place(x=30,y=230)
+campo_texto=tk.StringVar()
+campTxt=tk.Entry(ventana,textvariable=campo_texto).place(x=30,y=230)
 
 
 btnCarga=tkinter.Button(ventana,text="Cargar",padx=15,pady=10, command=campoTexto).place(x=30,y=260)
