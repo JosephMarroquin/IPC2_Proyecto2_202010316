@@ -5,7 +5,7 @@ class ListaProducto:
         self.productos = ListaNoOrdenada()
     
     def agregaMatriz(self, elabo):
-        self.productos.agregar({"elaboracion":elabo})
+        self.productos.agregar(elabo)
     
 
 

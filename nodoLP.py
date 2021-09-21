@@ -1,4 +1,4 @@
-class Nodo:
+class NodoLP:
     def __init__(self,datoInicial):  
         self.dato = datoInicial     
         self.siguiente = None       

@@ -5,16 +5,16 @@
     subgraph cluster_p{
         label="Elaboracion"
         bgcolor="#398D9C"
-        raiz[label=L1pC2p]
+        raiz[label=L1pC1p]
         edge[dir="both"]
             
-        Columna1[label=L2pC1p,group=1,fillcolor=yellow];
+        Columna1[label=L1pC3p,group=1,fillcolor=yellow];
 
         
         Columna2[label=L2pC2p,group=2,fillcolor=yellow];
 
         
-        Columna3[label=L1pC4p,group=3,fillcolor=yellow];
+        Columna3[label=L2pC4p,group=3,fillcolor=yellow];
 
         
             Columna1->Columna2

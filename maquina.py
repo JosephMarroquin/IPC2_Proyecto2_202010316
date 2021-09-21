@@ -7,7 +7,7 @@ class Maquina:
     def elaboracionMaquina(self):
         actual = self.nombre.productos.cabeza
         while actual != None:
-            print(str(actual.dato["elaboracion"]))
+            print(str(actual.dato))
             actual = actual.siguiente
     
     def generarGraphviz(self):
@@ -21,7 +21,7 @@ class Maquina:
     subgraph cluster_p{
         label="Elaboracion"
         bgcolor="#398D9C"
-        raiz[label='''+str(actual.dato["elaboracion"])+''']
+        raiz[label='''+str(actual.dato)+''']
         edge[dir="both"]
             '''
             actual = actual.siguiente
@@ -29,7 +29,7 @@ class Maquina:
         while actual!=None:
             contador+=1
             graphviz+='''
-        Columna'''+str(contador)+'''[label='''+str(actual.dato["elaboracion"])+''',group='''+str(contador)+''',fillcolor=yellow];
+        Columna'''+str(contador)+'''[label='''+str(actual.dato)+''',group='''+str(contador)+''',fillcolor=yellow];
 
         '''
             actual = actual.siguiente
