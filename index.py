@@ -13,11 +13,13 @@ from producto import ListaProducto
 import gestor
 from maquina import *
 from reporteHTML import *
-import re
+import re, cv2
+import webbrowser
+import imgkit
+
 
 ventana=tkinter.Tk()
-ventana.geometry("900x620")
-cont=0
+ventana.geometry("980x600")
 Label(ventana, text="Listado de productos:").place(x=30,y=0)
 lista_productos=Listbox(ventana,width=50)
 
@@ -27,7 +29,7 @@ def cargarSimulacion():
     objetoTree=xml.parse(direccion)
     root=objetoTree.getroot()
     lista_productos.place(x=30,y=20)
-    global cont
+    cont=0
 
     for listaproducto in root.findall("ListadoProductos"):
         for producto in listaproducto.findall("Producto"):
@@ -115,33 +117,85 @@ def cargarMaquina():
 
 def mostrarGrafo(): 
     img=tkinter.PhotoImage(file="graphviz.png")
-    lbl_img=tkinter.Label(ventana,image=img).place(x=30,y=350)
-    lbl_img.pack()   
+    lbl_img=tkinter.Label(ventana,image=img).place(x=30,y=420)
+    img2=tkinter.PhotoImage(file="html.png")
+    lbl_img2=tkinter.Label(ventana,image=img2).place(x=360,y=0)
+    lbl_img.pack() 
+    lbl_img2.pack()     
 
+def abrirHTML():
+    webbrowser.open_new_tab("reporteHTML.html")
+
+def datosEstudiante():
+    ventana_nueva=Toplevel()
+    ventana_nueva.title("Datos del estudiante")
+    ventana_nueva.geometry("325x150")
+
+    Label(ventana_nueva, text="Joseph Jeferson Marroquín Monroy").place(x=0,y=20)
+    Label(ventana_nueva, text="202010316").place(x=0,y=40)
+    Label(ventana_nueva, text="Introducción a la Programación y computación 2 seccion B").place(x=0,y=60)
+    Label(ventana_nueva, text="Ingenieria en Ciencias y Sistemas").place(x=0,y=80)
+    Label(ventana_nueva, text="4to Semestre").place(x=0,y=100)
+
+    ventana_nueva.mainloop()
+
+def infoAPP():
+    ventana_nueva2=Toplevel()
+    ventana_nueva2.title("Informacion Aplicacion")
+    ventana_nueva2.geometry("325x150")
+
+    Label(ventana_nueva2, text="Esta aplicacion analiza dos archivos de entrada los \ncuales tienen indicaciones para ensamblar un producto").place(x=0,y=20)
+
+    ventana_nueva2.mainloop()
 
 barraMenu=Menu(ventana)
 menuArchivo=Menu(barraMenu)
 menuReporte=Menu(barraMenu)
+menuAyuda=Menu(barraMenu)
+
 menuArchivo.add_command(label="Configuracion de maquina",command=cargarMaquina)
 menuArchivo.add_command(label="Simulacion",command=cargarSimulacion)
 barraMenu.add_cascade(label="Cargar Archivo",menu=menuArchivo)
 
-menuReporte.add_command(label="Reporte HTML")
+menuReporte.add_command(label="Reporte HTML",command=abrirHTML)
 menuReporte.add_command(label="Reporte cola de secuencia",command=mostrarGrafo)
 barraMenu.add_cascade(label="Reportes",menu=menuReporte)
+
+menuAyuda.add_command(label="Datos del Estudiante", command=datosEstudiante)
+menuAyuda.add_command(label="Acerca de la aplicacion",command=infoAPP)
+barraMenu.add_cascade(label="Ayuda",menu=menuAyuda)
+
 ventana.config(menu=barraMenu)
 
 def campoTexto():
     resultado=campo_texto.get()
+
+    nombre=str(resultado)
+
     gestor.mostrarLista(productosMaquina)
     gestor.mostrarListaLP(DatoslineaProduccion)
     gestor.mostrarListaLE(nEnsamblaje)
+    
     elaboracion = gestor.buscarNodo(productosMaquina,resultado)
     maq = Maquina(elaboracion)
     nle=Reportehtml(elaboracion)
-    nle.repHtml(nEnsamblaje,DatoslineaProduccion)
+    nle.repHtml(nombre,nEnsamblaje,DatoslineaProduccion)
+
+    path_wkthmltoimage = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe'
+    config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
+    imgkit.from_file('reporteHTML.html', 'html.png',config=config)
+
+    jp = cv2.imread("html.png")
+    newImg = cv2.resize(jp, (600, 400))
+    cv2.imwrite("html.png",newImg)
+
+    img2=tkinter.PhotoImage(file="html.png")
+    lbl_img2=tkinter.Label(ventana,image=img2).place(x=360,y=0)
+    lbl_img2.pack()   
     #maq.elaboracionMaquina()
     maq.generarGraphviz()
+   
+
 
     
 
